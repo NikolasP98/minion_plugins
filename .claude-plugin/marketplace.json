@@ -1,0 +1,58 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "minion-plugins",
+  "description": "Plugin marketplace for Minion development tools and workflows",
+  "owner": {
+    "name": "nikolasp98"
+  },
+  "plugins": [
+    {
+      "name": "fork-sync",
+      "description": "Multi-phase fork synchronization workflow with resumable upstream evaluation, conflict resolution script generation, and git worktree isolation",
+      "version": "1.0.0",
+      "source": "./plugins/fork-sync",
+      "category": "development",
+      "author": { "name": "nikolasp98" }
+    },
+    {
+      "name": "lessons-learned",
+      "description": "Post-task iterative improvement capture — observes friction points, proposes fixes, implements them, and records patterns to memory",
+      "version": "1.0.0",
+      "source": "./plugins/lessons-learned",
+      "category": "productivity",
+      "author": { "name": "nikolasp98" }
+    },
+    {
+      "name": "provision-server",
+      "description": "End-to-end remote server provisioning for Minion instances — SSH check, dry run, credential collection, setup execution, monitoring, and config registration",
+      "version": "1.0.0",
+      "source": "./plugins/provision-server",
+      "category": "deployment",
+      "author": { "name": "nikolasp98" }
+    },
+    {
+      "name": "pr-workflow",
+      "description": "Three-phase GitHub PR pipeline: script-first review with structured findings, automated preparation with CI gates, and deterministic squash merge with co-author trailers",
+      "version": "1.0.0",
+      "source": "./plugins/pr-workflow",
+      "category": "development",
+      "author": { "name": "nikolasp98" }
+    },
+    {
+      "name": "mintlify",
+      "description": "Mintlify documentation platform expert — guides creating and maintaining docs sites with MDX, navigation config, API docs, and deployment",
+      "version": "1.0.0",
+      "source": "./plugins/mintlify",
+      "category": "development",
+      "author": { "name": "mintlify" }
+    },
+    {
+      "name": "minion-docs",
+      "description": "Minion codebase documentation expert, code reviewer, and best-practice advisor with structured assessment output",
+      "version": "1.0.0",
+      "source": "./plugins/minion-docs",
+      "category": "development",
+      "author": { "name": "nikolasp98" }
+    }
+  ]
+}

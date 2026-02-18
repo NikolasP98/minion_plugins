@@ -1,0 +1,9 @@
+{
+  "name": "minion-docs",
+  "description": "Minion codebase documentation expert, code reviewer, and best-practice advisor",
+  "version": "1.0.0",
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["minion", "documentation", "code-review", "best-practices", "conventions"]
+}

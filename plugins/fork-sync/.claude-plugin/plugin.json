@@ -1,0 +1,9 @@
+{
+  "name": "fork-sync",
+  "description": "Multi-phase fork synchronization workflow with resumable upstream evaluation",
+  "version": "1.0.0",
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["fork", "sync", "upstream", "git", "merge", "conflict-resolution"]
+}

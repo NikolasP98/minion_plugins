@@ -1,0 +1,9 @@
+{
+  "name": "lessons-learned",
+  "description": "Post-task iterative improvement capture with structured observation workflow",
+  "version": "1.0.0",
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["lessons-learned", "improvement", "feedback", "observations", "workflow"]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "mintlify",
+  "description": "Mintlify documentation platform expert for MDX docs sites",
+  "version": "1.0.0",
+  "author": { "name": "mintlify" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["mintlify", "documentation", "mdx", "docs", "api-reference"]
+}

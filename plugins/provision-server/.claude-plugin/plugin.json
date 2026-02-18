@@ -1,0 +1,9 @@
+{
+  "name": "provision-server",
+  "description": "End-to-end remote server provisioning for Minion instances",
+  "version": "1.0.0",
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["provisioning", "deployment", "server", "ssh", "systemd", "remote"]
+}

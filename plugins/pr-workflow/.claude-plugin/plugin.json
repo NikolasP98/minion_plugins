@@ -1,0 +1,9 @@
+{
+  "name": "pr-workflow",
+  "description": "Three-phase GitHub PR pipeline: review, prepare, and deterministic squash merge",
+  "version": "1.0.0",
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["github", "pull-request", "review", "merge", "ci", "workflow"]
+}
