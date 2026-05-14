@@ -19,3 +19,6 @@ plugins/fork-sync/skills/fork-sync/scripts/resolve-conflicts.sh
 # PR workflow local artifacts
 .local/
 .worktrees/
+
+# Local symlink to vault — not tracked
+docs
