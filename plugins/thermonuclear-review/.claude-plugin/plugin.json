@@ -1,0 +1,9 @@
+{
+  "name": "thermonuclear-review",
+  "description": "Adversarial, highest-severity code-quality review of a PR or diff — correctness, security, data-loss, and concurrency issues with file:line evidence and a terse, severity-grouped verdict",
+  "version": "1.0.0",
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["code-review", "pull-request", "security", "ci", "quality", "adversarial"]
+}

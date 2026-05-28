@@ -53,6 +53,14 @@
       "source": "./plugins/minion-docs",
       "category": "development",
       "author": { "name": "nikolasp98" }
+    },
+    {
+      "name": "thermonuclear-review",
+      "description": "Adversarial, highest-severity PR/diff review — correctness, security, data-loss, and concurrency issues with file:line evidence and a terse, severity-grouped verdict; runnable in CI via claude-code-action",
+      "version": "1.0.0",
+      "source": "./plugins/thermonuclear-review",
+      "category": "development",
+      "author": { "name": "nikolasp98" }
     }
   ]
 }
