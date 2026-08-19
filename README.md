@@ -12,6 +12,7 @@ Plugin marketplace for Minion development tools and workflows. Installable via C
 | [pr-workflow](plugins/pr-workflow/) | development | Three-phase PR review/prepare/merge pipeline | Yes |
 | [mintlify](plugins/mintlify/) | development | Mintlify documentation platform expert | Yes |
 | [minion-docs](plugins/minion-docs/) | development | Minion codebase docs and code review | Minion-specific |
+| [minion-engineering](plugins/minion-engineering/) | development | Namespaced engineering, technical-writing, and advisory prose-audit skills | Minion-specific |
 
 ## Installation
 

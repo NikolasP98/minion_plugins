@@ -55,6 +55,14 @@
       "author": { "name": "nikolasp98" }
     },
     {
+      "name": "minion-engineering",
+      "description": "Curated MINION engineering discipline, precise technical writing, and advisory-only deterministic prose auditing",
+      "version": "1.0.0",
+      "source": "./plugins/minion-engineering",
+      "category": "development",
+      "author": { "name": "nikolasp98" }
+    },
+    {
       "name": "thermonuclear-review",
       "description": "Adversarial, highest-severity PR/diff review — correctness, security, data-loss, and concurrency issues with file:line evidence and a terse, severity-grouped verdict; runnable in CI via claude-code-action",
       "version": "1.0.0",
