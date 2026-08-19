@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Self-check for the advisory audit wrapper: python3 tests/test_audit.py"""
+"""Self-check for the advisory audit wrapper and the rewrite-preservation gate:
+python3 tests/test_audit.py
+"""
 
 import json
 import os
@@ -10,6 +12,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 AUDIT = HERE.parent / "scripts" / "audit.py"
+VALIDATE = HERE.parent / "scripts" / "validate_preservation.py"
 
 SPANISH = """# Guia de despliegue
 
@@ -201,6 +204,70 @@ def test_non_markdown_input_is_rejected():
         other.write_text("hello\n")
         completed = run("--", str(other))
     assert completed.returncode == 2, completed.stdout
+
+
+ORIGINAL = """# Launch notes
+
+In today's fast-paced world, it's not just about shipping - it's about
+delivering value. We leverage synergies across the stack to unlock outcomes.
+
+The migration runs on 2026-03-14 and moves 42 tables to Postgres 16.
+Run `pg_dump --format=custom` first; a failed cutover may lose writes.
+"""
+
+FACT_DESTROYING_REWRITE = """# Launch notes
+
+Shipping matters less than the value we deliver.
+
+The migration moves the tables to Postgres. Run a dump first.
+"""
+
+MINIMAL_REPAIR = """# Launch notes
+
+This release is not only about shipping the code - it is also about
+delivering value. We reuse the same queue layer across the stack to cut work.
+
+The migration runs on 2026-03-14 and moves 42 tables to Postgres 16.
+Run `pg_dump --format=custom` first; a failed cutover may lose writes.
+"""
+
+
+def validate(*args):
+    return subprocess.run(
+        [sys.executable, str(VALIDATE), *args],
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_a_rewrite_that_drops_facts_is_rejected():
+    with tempfile.TemporaryDirectory() as tmp:
+        original = Path(tmp) / "original.md"
+        proposed = Path(tmp) / "proposed.md"
+        original.write_text(ORIGINAL)
+        proposed.write_text(FACT_DESTROYING_REWRITE)
+        completed = validate(str(original), str(proposed))
+    assert completed.returncode == 1, completed.stdout
+    result = json.loads(completed.stdout)
+    assert result["passed"] is False
+    lost = {item["value"] for item in result["missing"]}
+    assert "2026-03-14" in lost
+    assert "`pg_dump --format=custom`" in lost
+
+
+def test_a_minimal_repair_passes_strict_validation():
+    with tempfile.TemporaryDirectory() as tmp:
+        original = Path(tmp) / "original.md"
+        proposed = Path(tmp) / "proposed.md"
+        original.write_text(ORIGINAL)
+        proposed.write_text(MINIMAL_REPAIR)
+        completed = validate("--strict", str(original), str(proposed))
+    assert completed.returncode == 0, completed.stdout
+    result = json.loads(completed.stdout)
+    assert result["passed"] is True
+    assert result["missing"] == []
+    assert result["warnings"] == []
+    assert result["preserved"] == result["total_constraints"] > 0
 
 
 if __name__ == "__main__":

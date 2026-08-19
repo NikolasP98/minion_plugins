@@ -94,7 +94,7 @@ Key conventions:
 
 - Use `${CLAUDE_PLUGIN_ROOT}` for all intra-plugin path references
 - Skills auto-discover from `skills/*/SKILL.md`
-- Scripts should be self-contained bash with no external dependencies beyond standard tools
+- Scripts should be self-contained bash, or Python 3 using only the standard library, with no external dependencies beyond standard tools
 - Keep `plugin.json` minimal — rely on auto-discovery
 
 ## Contributing
