@@ -11,7 +11,7 @@ Read [core-contract.md](references/core-contract.md) before any audit or request
 
 ## Audit
 
-Resolve every script in `scripts/` relative to this skill's loaded directory, never relative to the working directory. This shell snippet sets `$unslop` to that directory for a Claude plugin install and for a project-local `.agents` install; every command in this skill and its references uses `$unslop`.
+Resolve every script in `scripts/` relative to this skill's loaded directory, never relative to the working directory. This shell snippet sets `$unslop` to that directory for a Claude plugin install and for a project-local `.agents` install; every command in this skill and its references uses `$unslop`. A Cursor or Codex project needs the skill tree copied to `<project>/.agents/skills/`, so that `$unslop` resolves to `<project>/.agents/skills/minion-unslop/scripts`; the marketplace README documents the copy.
 
 ```bash
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
@@ -26,6 +26,10 @@ python3 "$unslop/audit.py" -- path/to/file.md path/to/another.md
 ```
 
 The wrapper prints deterministic JSON sections and returns zero when scans find issues. A nonzero status means invocation or tool failure, never prose findings.
+
+`--genre` selects the threshold profile the structure and silhouette scans score against: `docs` (the default, for documentation, READMEs, and reference material), `prose` (articles, posts, essays), or `social`. Pass it before the `--` separator, and state the genre used when reporting, because thresholds differ between profiles.
+
+Every scan obeys the English-only contract. When the language-aware scanners decline a file as non-English, the wrapper also declines the readability scan rather than scoring non-English text against an English syllable model.
 
 Report:
 
