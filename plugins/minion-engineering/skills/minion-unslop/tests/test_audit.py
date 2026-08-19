@@ -25,6 +25,20 @@ las primeras dos horas. El responsable de guardia coordina la respuesta y
 registra las decisiones tomadas.
 """
 
+BUZZWORDS = """# Roadmap
+
+## Q3
+
+- Leverage synergies
+- Streamline workflows
+- Unlock value
+- Drive alignment
+- Empower stakeholders
+- Optimize throughput
+- Accelerate delivery
+- Maximize impact
+"""
+
 
 def run(*args):
     return subprocess.run(
@@ -82,6 +96,27 @@ def test_non_english_input_is_declined_by_every_scanner():
         assert scan["result"]["non_english"] is True, name
         assert not scan["result"].get("flags"), name
         assert not scan["result"].get("violations"), name
+
+
+def test_mixed_language_verdict_keeps_every_scanner_result():
+    with tempfile.TemporaryDirectory() as tmp:
+        buzzwords = Path(tmp) / "roadmap.md"
+        buzzwords.write_text(BUZZWORDS)
+        completed = run("--", str(buzzwords))
+    assert completed.returncode == 0, completed.stderr
+    _, scans = scans_by_name(completed)
+
+    assert scans["structure"]["result"]["non_english"] is True
+    assert scans["silhouette"]["result"]["non_english"] is True
+
+    banned = scans["banned_phrases"]
+    assert banned["finding_status"] == "findings"
+    assert not banned["result"].get("non_english")
+    assert [v["phrase"] for v in banned["result"]["violations"]] == ["leverage synerg"]
+
+    readability = scans["readability"]
+    assert not readability["result"].get("non_english")
+    assert "flesch_kincaid_grade" in readability["result"]
 
 
 def test_genre_reaches_the_genre_aware_scanners():

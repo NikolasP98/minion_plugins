@@ -29,7 +29,7 @@ The wrapper prints deterministic JSON sections and returns zero when scans find 
 
 `--genre` selects the threshold profile the structure and silhouette scans score against: `docs` (the default, for documentation, READMEs, and reference material), `prose` (articles, posts, essays), or `social`. Pass it before the `--` separator, and state the genre used when reporting, because thresholds differ between profiles.
 
-Every scan obeys the English-only contract. When the language-aware scanners decline a file as non-English, the wrapper also declines the readability scan rather than scoring non-English text against an English syllable model.
+Every scan obeys the English-only contract. The banned-phrase, structure, and silhouette scans each carry their own language check and decline on their own; the wrapper never overrides one of those verdicts. Readability has no language check, so the wrapper declines it only when all three language-aware scans agree the file is non-English, rather than scoring non-English text against an English syllable model. A scan that reports findings on a file another scan declined is reporting its own confirmed result: read both, and treat a mixed verdict as a signal that the language heuristic is near its threshold.
 
 Report:
 
