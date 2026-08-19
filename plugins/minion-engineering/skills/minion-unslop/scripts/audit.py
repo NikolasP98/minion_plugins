@@ -8,16 +8,17 @@ import json
 import os
 import subprocess
 import sys
-
-sys.dont_write_bytecode = True
-
 from collections import namedtuple
 from pathlib import Path
 from typing import Any, Dict, List
 
-from _lang import is_probably_english
+sys.dont_write_bytecode = True
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+
+from _lang import is_probably_english  # noqa: E402
+
 GENRES = ("prose", "docs", "social")
 
 Scanner = namedtuple("Scanner", "name script genre_aware language_aware")

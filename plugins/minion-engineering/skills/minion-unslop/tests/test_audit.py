@@ -2,6 +2,7 @@
 """Self-check for the advisory audit wrapper: python3 tests/test_audit.py"""
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -66,6 +67,21 @@ def run(*args):
 def scans_by_name(completed):
     report = json.loads(completed.stdout)
     return report, {s["name"]: s for s in report["files"][0]["scans"]}
+
+
+def test_runs_with_an_isolated_module_path_and_through_a_symlink():
+    with tempfile.TemporaryDirectory() as tmp:
+        link = Path(tmp) / "unslop-audit"
+        link.symlink_to(AUDIT)
+        completed = subprocess.run(
+            [sys.executable, str(link), "--", str(HERE / "fixtures" / "sample.md")],
+            text=True,
+            capture_output=True,
+            env=dict(os.environ, PYTHONSAFEPATH="1"),
+        )
+    assert completed.returncode == 0, completed.stderr
+    _, scans = scans_by_name(completed)
+    assert scans["banned_phrases"]["finding_status"] == "findings"
 
 
 def test_findings_report_is_advisory_and_exits_zero():

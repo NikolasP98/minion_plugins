@@ -19,4 +19,10 @@ python3 "$unslop/validate_preservation.py" original.md proposed.md constraints.j
 python3 "$unslop/diff_check.py" original.md proposed.md
 ```
 
-For legal, medical, scientific, safety, or security text, run `validate_preservation.py --strict` if supported by the vendored command interface and manually re-read every negation, limit, condition, attribution, and relationship. Tool success is necessary evidence, not semantic proof.
+For legal, medical, scientific, safety, or security text, validate in strict mode, which also fails on warnings rather than on missing constraints alone. The vendored parser reads `--strict` only as the first argument and silently ignores it anywhere else, so keep it ahead of the file arguments:
+
+```bash
+python3 "$unslop/validate_preservation.py" --strict original.md proposed.md constraints.json
+```
+
+Then manually re-read every negation, limit, condition, attribution, and relationship. Tool success is necessary evidence, not semantic proof.
