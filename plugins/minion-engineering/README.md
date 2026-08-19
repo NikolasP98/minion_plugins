@@ -33,4 +33,10 @@ run under Cursor and Codex; the repository README documents the project-local
 ## Attribution
 
 Vendored and adapted MIT-licensed material with exact upstream commit pins is listed in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Each skill directory carries a
+byte-identical copy so standalone `.agents/skills/` installs keep the attribution.
+After any pin bump or notice edit, run the drift check and fix whatever it flags:
+
+```bash
+scripts/check_third_party_notices.sh
+```
