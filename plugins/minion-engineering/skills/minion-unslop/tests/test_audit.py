@@ -25,6 +25,21 @@ las primeras dos horas. El responsable de guardia coordina la respuesta y
 registra las decisiones tomadas.
 """
 
+SPANISH_UNIFORM_CADENCE = """# Informe
+
+El equipo revisa los registros del sistema durante la jornada laboral completa.
+El equipo documenta las incidencias detectadas durante la jornada laboral completa.
+El equipo comunica los resultados obtenidos durante la jornada laboral completa.
+El equipo verifica los parametros aprobados durante la jornada laboral completa.
+El equipo confirma los inventarios recibidos durante la jornada laboral completa.
+
+El equipo coordina las respuestas emitidas durante la jornada laboral completa.
+El equipo registra las decisiones tomadas durante la jornada laboral completa.
+El equipo publica los informes semanales durante la jornada laboral completa.
+El equipo archiva los expedientes cerrados durante la jornada laboral completa.
+El equipo actualiza los procedimientos vigentes durante la jornada laboral completa.
+"""
+
 BUZZWORDS = """# Roadmap
 
 ## Q3
@@ -98,7 +113,7 @@ def test_non_english_input_is_declined_by_every_scanner():
         assert not scan["result"].get("violations"), name
 
 
-def test_mixed_language_verdict_keeps_every_scanner_result():
+def test_mixed_verdict_preserves_language_aware_findings():
     with tempfile.TemporaryDirectory() as tmp:
         buzzwords = Path(tmp) / "roadmap.md"
         buzzwords.write_text(BUZZWORDS)
@@ -114,6 +129,34 @@ def test_mixed_language_verdict_keeps_every_scanner_result():
     assert not banned["result"].get("non_english")
     assert [v["phrase"] for v in banned["result"]["violations"]] == ["leverage synerg"]
 
+
+def test_readability_is_declined_even_when_another_scanner_flags():
+    with tempfile.TemporaryDirectory() as tmp:
+        spanish = Path(tmp) / "informe.md"
+        spanish.write_text(SPANISH_UNIFORM_CADENCE)
+        completed = run("--", str(spanish))
+    assert completed.returncode == 0, completed.stderr
+    _, scans = scans_by_name(completed)
+
+    structure = scans["structure"]
+    assert structure["finding_status"] == "findings"
+    assert not structure["result"].get("non_english")
+    assert {flag["metric"] for flag in structure["result"]["flags"]} == {
+        "sentence_burstiness",
+        "opener_repetition",
+    }
+
+    readability = scans["readability"]
+    assert readability["finding_status"] == "clean_or_declined"
+    assert readability["result"]["non_english"] is True
+    assert readability["result"]["flags"] == []
+    assert "flesch_kincaid_grade" not in readability["result"]
+
+
+def test_english_text_keeps_its_readability_metrics():
+    completed = run("--", str(HERE / "fixtures" / "sample.md"))
+    assert completed.returncode == 0, completed.stderr
+    _, scans = scans_by_name(completed)
     readability = scans["readability"]
     assert not readability["result"].get("non_english")
     assert "flesch_kincaid_grade" in readability["result"]

@@ -8,9 +8,14 @@ import json
 import os
 import subprocess
 import sys
+
+sys.dont_write_bytecode = True
+
 from collections import namedtuple
 from pathlib import Path
 from typing import Any, Dict, List
+
+from _lang import is_probably_english
 
 HERE = Path(__file__).resolve().parent
 GENRES = ("prose", "docs", "social")
@@ -65,16 +70,11 @@ def run_scanner(scanner: Scanner, path: Path, genre: str) -> Dict[str, Any]:
     }
 
 
-def enforce_english_only(scans: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def enforce_english_only(scans: List[Dict[str, Any]], text: str) -> List[Dict[str, Any]]:
     """UNSLOP judges English prose only. Scanners that carry their own language
-    check own their verdict and are never rewritten here; the wrapper declines
-    the remaining scans only when every language-aware scanner declined."""
-    verdicts = [
-        bool(scan["result"].get("non_english"))
-        for scan in scans
-        if scan["name"] in LANGUAGE_AWARE
-    ]
-    if not verdicts or not all(verdicts):
+    check own their verdict and are never rewritten here; the wrapper runs the
+    same shared check for the scans that have none."""
+    if is_probably_english(text):
         return scans
     for scan in scans:
         if scan["name"] in LANGUAGE_AWARE:
@@ -83,8 +83,8 @@ def enforce_english_only(scans: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         scan["result"] = {
             "non_english": True,
             "flags": [],
-            "note": "scanner has no language check; declined because every "
-            "language-aware scanner found non-English input",
+            "note": "scanner has no language check; declined by the shared "
+            "English-only heuristic in _lang.py",
         }
     return scans
 
@@ -111,8 +111,9 @@ def main(argv: List[str]) -> int:
             scans = [
                 run_scanner(scanner, path, args.genre) for scanner in SCANNERS
             ]
+            text = path.read_text(errors="replace")
             report["files"].append(
-                {"path": str(path), "scans": enforce_english_only(scans)}
+                {"path": str(path), "scans": enforce_english_only(scans, text)}
             )
     except (OSError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
