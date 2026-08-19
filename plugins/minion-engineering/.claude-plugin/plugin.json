@@ -2,5 +2,8 @@
   "name": "minion-engineering",
   "description": "Curated MINION engineering, technical-writing, and advisory prose-audit skills",
   "version": "1.0.0",
-  "author": { "name": "nikolasp98" }
+  "author": { "name": "nikolasp98" },
+  "repository": "https://github.com/nikolasp98/minion_plugins",
+  "license": "MIT",
+  "keywords": ["minion", "engineering", "technical-writing", "prose-audit", "unslop", "skills"]
 }

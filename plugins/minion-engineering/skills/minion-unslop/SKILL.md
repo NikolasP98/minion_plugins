@@ -11,18 +11,18 @@ Read [core-contract.md](references/core-contract.md) before any audit or request
 
 ## Audit
 
-Resolve `scripts/audit.py` relative to this skill's loaded directory, never relative to the working directory. For a project-local install, this shell snippet searches parent directories; a Claude plugin may instead use `${CLAUDE_PLUGIN_ROOT}/skills/minion-unslop/scripts/audit.py`.
+Resolve every script in `scripts/` relative to this skill's loaded directory, never relative to the working directory. This shell snippet sets `$unslop` to that directory for a Claude plugin install and for a project-local `.agents` install; every command in this skill and its references uses `$unslop`.
 
 ```bash
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-  audit="$CLAUDE_PLUGIN_ROOT/skills/minion-unslop/scripts/audit.py"
+  unslop="$CLAUDE_PLUGIN_ROOT/skills/minion-unslop/scripts"
 else
   root=$PWD
-  until [ -f "$root/.agents/skills/minion-unslop/scripts/audit.py" ] || [ "$root" = / ]; do root=$(dirname "$root"); done
-  audit="$root/.agents/skills/minion-unslop/scripts/audit.py"
+  until [ -d "$root/.agents/skills/minion-unslop/scripts" ] || [ "$root" = / ]; do root=$(dirname "$root"); done
+  unslop="$root/.agents/skills/minion-unslop/scripts"
 fi
-[ -f "$audit" ] || { echo "minion-unslop audit.py not found" >&2; exit 2; }
-python3 "$audit" -- path/to/file.md path/to/another.md
+[ -f "$unslop/audit.py" ] || { echo "minion-unslop scripts not found" >&2; exit 2; }
+python3 "$unslop/audit.py" -- path/to/file.md path/to/another.md
 ```
 
 The wrapper prints deterministic JSON sections and returns zero when scans find issues. A nonzero status means invocation or tool failure, never prose findings.
