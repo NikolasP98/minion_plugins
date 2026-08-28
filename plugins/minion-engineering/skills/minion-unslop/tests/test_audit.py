@@ -240,6 +240,15 @@ def validate(*args):
     )
 
 
+def validate_texts(original_text, proposed_text, *options):
+    with tempfile.TemporaryDirectory() as tmp:
+        original = Path(tmp) / "original.md"
+        proposed = Path(tmp) / "proposed.md"
+        original.write_text(original_text)
+        proposed.write_text(proposed_text)
+        return validate(*options, str(original), str(proposed))
+
+
 def test_a_rewrite_that_drops_facts_is_rejected():
     with tempfile.TemporaryDirectory() as tmp:
         original = Path(tmp) / "original.md"
@@ -268,6 +277,72 @@ def test_a_minimal_repair_passes_strict_validation():
     assert result["missing"] == []
     assert result["warnings"] == []
     assert result["preserved"] == result["total_constraints"] > 0
+
+
+def test_validator_runs_through_a_symlink_with_safe_path_enabled():
+    with tempfile.TemporaryDirectory() as tmp:
+        link = Path(tmp) / "validate-preservation"
+        original = Path(tmp) / "original.md"
+        proposed = Path(tmp) / "proposed.md"
+        link.symlink_to(VALIDATE)
+        original.write_text("The limit is 12%.")
+        proposed.write_text("The limit remains 12%.")
+        completed = subprocess.run(
+            [sys.executable, str(link), str(original), str(proposed)],
+            text=True,
+            capture_output=True,
+            env=dict(os.environ, PYTHONSAFEPATH="1"),
+        )
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_trillion_currency_is_not_reduced_to_a_single_letter_magnitude():
+    completed = validate_texts("The exposure is $1 trillion.", "The exposure is $1 billion.")
+    assert completed.returncode == 1, completed.stdout
+    missing = json.loads(completed.stdout)["missing"]
+    assert any(item["type"] == "currency" and item["value"] == "$1 trillion" for item in missing)
+
+
+def test_numeric_substrings_do_not_preserve_changed_facts():
+    cases = (
+        ("The rate is 12%.", "The rate is 112%."),
+        ("The payload is 12 kg.", "The payload is 112 kg."),
+        ("Deploy v1.2 now.", "Deploy v1.20 now."),
+    )
+    for original, proposed in cases:
+        completed = validate_texts(original, proposed)
+        assert completed.returncode == 1, (original, completed.stdout)
+
+
+def test_changed_calendar_day_is_rejected_across_date_formats():
+    completed = validate_texts(
+        "The migration runs on 2026-03-14.",
+        "The migration runs on March 15, 2026.",
+    )
+    assert completed.returncode == 1, completed.stdout
+    assert any(item["type"] == "date_iso" for item in json.loads(completed.stdout)["missing"])
+
+
+def test_counts_and_ranges_keep_their_local_meaning():
+    count = validate_texts("Migrate 42 tables.", "Migrate the tables after ticket 42.")
+    assert count.returncode == 1, count.stdout
+    span = validate_texts("Allow 10-20 requests.", "Allow 10 retries across 20 requests.")
+    assert span.returncode == 1, span.stdout
+
+
+def test_range_units_and_timezones_are_preserved():
+    span = validate_texts("Retain data for 10-20 days.", "Retain data for 10-20 months.")
+    assert span.returncode == 1, span.stdout
+    clock = validate_texts("Cut over at 09:30 UTC.", "Cut over at 09:30 PST.")
+    assert clock.returncode == 1, clock.stdout
+
+
+def test_quarter_and_year_must_stay_together():
+    completed = validate_texts(
+        "Ship in Q2 2027.",
+        "Q2 is under review; the prior system shipped in 2027.",
+    )
+    assert completed.returncode == 1, completed.stdout
 
 
 if __name__ == "__main__":
