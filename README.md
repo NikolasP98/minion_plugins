@@ -12,6 +12,7 @@ Plugin marketplace for Minion development tools and workflows. Installable via C
 | [pr-workflow](plugins/pr-workflow/) | development | Three-phase PR review/prepare/merge pipeline | Yes |
 | [mintlify](plugins/mintlify/) | development | Mintlify documentation platform expert | Yes |
 | [minion-docs](plugins/minion-docs/) | development | Minion codebase docs and code review | Minion-specific |
+| [minion-engineering](plugins/minion-engineering/) | development | Namespaced engineering, technical-writing, and advisory prose-audit skills | Minion-specific |
 
 ## Installation
 
@@ -28,6 +29,35 @@ Add this repository as a marketplace source in Claude Code:
 ```
 /plugin add /path/to/minion_plugins/plugins/fork-sync
 ```
+
+### Project-local install for Cursor and Codex
+
+The `minion-engineering` skills run outside Claude Code too. Outside a plugin install
+`${CLAUDE_PLUGIN_ROOT}` is unset, so their scripts resolve against `.agents/skills/` in
+the nearest parent directory. Copy the skill tree to the target project root:
+
+```bash
+mkdir -p /path/to/project/.agents/skills
+cp -r /path/to/minion_plugins/plugins/minion-engineering/skills/. /path/to/project/.agents/skills/
+```
+
+That produces the layout the skills expect:
+
+```
+/path/to/project/.agents/skills/
+├── minion-engineering/SKILL.md
+├── minion-technical-writing/SKILL.md
+└── minion-unslop/
+    ├── SKILL.md
+    └── scripts/audit.py
+```
+
+The vendored UNSLOP scanners are pinned at
+[theclaymethod/unslop](https://github.com/theclaymethod/unslop) commit
+`d81f5196167ded24f46fced04958c0c12d681798` and need only Python 3 from the standard
+library. Re-copy the tree to pick up a pin bump; see
+`plugins/minion-engineering/THIRD_PARTY_NOTICES.md` for attribution and the upstream
+NO-SHIP safety status.
 
 ## Creating a new plugin
 
@@ -64,7 +94,7 @@ Key conventions:
 
 - Use `${CLAUDE_PLUGIN_ROOT}` for all intra-plugin path references
 - Skills auto-discover from `skills/*/SKILL.md`
-- Scripts should be self-contained bash with no external dependencies beyond standard tools
+- Scripts should be self-contained bash, or Python 3 using only the standard library, with no external dependencies beyond standard tools
 - Keep `plugin.json` minimal — rely on auto-discovery
 
 ## Contributing

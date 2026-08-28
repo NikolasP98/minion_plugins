@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Validate JSON manifests
+        run: |
+          python -m json.tool .claude-plugin/marketplace.json >/dev/null
+          python -m json.tool plugins/minion-engineering/.claude-plugin/plugin.json >/dev/null
+      - name: Check bundled attribution
+        run: plugins/minion-engineering/scripts/check_third_party_notices.sh
+      - name: Compile Python sources
+        run: python -m compileall -q plugins/minion-engineering/skills/minion-unslop
+      - name: Run UNSLOP wrapper and preservation self-checks
+        run: python plugins/minion-engineering/skills/minion-unslop/tests/test_audit.py
